@@ -25,11 +25,30 @@ def resolve_path(path):
 
 
 def book(book_id):
-    return "<h1>a book with id %s</h1>" % book_id
+    try:
+        book_info = DB.title_info(book_id)
+        if book_id is None:
+            raise KeyError
+        body = ["<h1>{}</h1>".format(book_info['title']), "<ul>"]
+        body.append("<li>Author: {}</li>".format(book_info['author']))
+        body.append("<li>Publisher: {}</li>".format(book_info['publisher']))
+        body.append("<li>ISBN: {}</li>".format(book_info['isbn']))
+        body.append("</ul>")
+        body.append('<a href="/">Back to list</a>')
+    except KeyError:
+        body = "<h1>Book not found in database.</h1>"
+
+    return '\n'.join(body)
 
 
 def books():
-    return "<h1>a list of books</h1>"
+    all_books = DB.titles()
+    body = ['<h1>My Bookshelf</h1>, <ul>']
+    item_template = '<li><a href="/book/{id}">{title}</a></li>'
+    for book in all_books:
+        body.append(item_template.format(**book))
+    body.append('</ul>')
+    return '\n'.join(body)
 
 
 def application(environ, start_response):
