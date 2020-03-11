@@ -1,4 +1,4 @@
-import re
+import traceback
 
 from bookdb import BookDB
 
@@ -21,7 +21,7 @@ def resolve_path(path):
     except KeyError:
         raise NameError
 
-    return funcs, args
+    return func, args
 
 
 def book(book_id):
@@ -51,10 +51,10 @@ def application(environ, start_response):
     finally:
         headers.append(('Content-Length', str(len(body))))
         start_response(status, headers)
-        return body.encode('utf8')
+        return [body.encode('utf8')]
 
 
 if __name__ == '__main__':
     from wsgiref.simple_server import make_server
-    srv = make_server('localhost', 8080, application)
+    srv = make_server('127.0.0.1', 8080, application)
     srv.serve_forever()
